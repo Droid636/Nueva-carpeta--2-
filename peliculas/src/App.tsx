@@ -15,7 +15,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Películas </h1>
+      <h1>Lista de Películas </h1>
       <div className="movies-grid">
         {movies.length > 0 ? (
           movies.map((movie) => (
