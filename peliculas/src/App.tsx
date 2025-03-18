@@ -7,7 +7,7 @@ import "./App.css";
 
 function Home() {
   const [movies, setMovies] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Guardamos el término de búsqueda
+  const [searchTerm, setSearchTerm] = useState("");
   const API_URL = "https://api.themoviedb.org/3/movie/popular?api_key=c144cee3268c94c83ad046b6533644c8";
   const navigate = useNavigate();
 
@@ -25,11 +25,12 @@ function Home() {
   }, []);
 
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value); // Actualizamos el término de búsqueda tal cual se ingresa
+    const value = event.target.value;
+    setSearchTerm(value.trim() !== "" ? value : "");
   };
 
   const filteredMovies = movies.filter((movie) =>
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase()) // Permitimos el término de búsqueda tal cual con espacios
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
