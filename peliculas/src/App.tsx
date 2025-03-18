@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Importar FontAwesome
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"; // Importar ícono de flecha
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faSearch } from "@fortawesome/free-solid-svg-icons";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 function Home() {
   const [movies, setMovies] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // Guardamos el término de búsqueda
   const API_URL = "https://api.themoviedb.org/3/movie/popular?api_key=c144cee3268c94c83ad046b6533644c8";
   const navigate = useNavigate();
 
@@ -25,21 +25,22 @@ function Home() {
   }, []);
 
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+    setSearchTerm(event.target.value); // Actualizamos el término de búsqueda tal cual se ingresa
   };
 
   const filteredMovies = movies.filter((movie) =>
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase()) // Permitimos el término de búsqueda tal cual con espacios
   );
 
   return (
     <div className="container">
       <h1 className="text-center my-4">Películas Populares</h1>
-      <div className="mb-4">
+      <div className="search-bar mb-4 d-flex align-items-center">
+        <FontAwesomeIcon icon={faSearch} className="search-icon me-2" />
         <input
           type="text"
           className="form-control"
-          placeholder="Buscar película..."
+          placeholder="Título, género, equipo o liga"
           value={searchTerm}
           onChange={handleSearch}
         />
@@ -63,7 +64,10 @@ function Home() {
             </div>
           ))
         ) : (
-          <p>No se encontraron películas.</p>
+          <div className="text-center mt-4">
+            <div className="hourglass"></div>
+            <p>No se encontraron películas.</p>
+          </div>
         )}
       </div>
     </div>
@@ -73,7 +77,7 @@ function Home() {
 function MovieDetails() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
-  const navigate = useNavigate(); // Para regresar al inicio
+  const navigate = useNavigate();
   const API_URL = `https://api.themoviedb.org/3/movie/${id}?api_key=c144cee3268c94c83ad046b6533644c8`;
 
   useEffect(() => {
@@ -93,20 +97,26 @@ function MovieDetails() {
 
   return (
     <div className="container movie-details">
-      {/* Botón para regresar al inicio */}
       <button className="btn btn-secondary mb-4" onClick={() => navigate("/")}>
         <FontAwesomeIcon icon={faArrowLeft} /> Regresar
       </button>
-
       <h1 className="text-center my-4">{movie.title}</h1>
       <div className="row">
         <div className="col-md-6">
-          <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} className="img-fluid" alt={movie.title} />
+          <img
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            className="img-fluid"
+            alt={movie.title}
+          />
         </div>
         <div className="col-md-6">
           <p>{movie.overview}</p>
-          <p><strong>Fecha de estreno:</strong> {movie.release_date}</p>
-          <p><strong>Puntuación:</strong> ⭐ {movie.vote_average}</p>
+          <p>
+            <strong>Fecha de estreno:</strong> {movie.release_date}
+          </p>
+          <p>
+            <strong>Puntuación:</strong> ⭐ {movie.vote_average}
+          </p>
           <div className="mt-4">
             <button className="btn btn-primary me-2">VER AHORA</button>
             <button className="btn btn-secondary">TRÁILER</button>
