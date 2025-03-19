@@ -34,9 +34,9 @@ function Home() {
   );
 
   return (
-    <div className="container">
+    <div className="container-fluid">
       <h1 className="text-center my-4">Películas Populares</h1>
-      <div className="search-bar mb-4 d-flex align-items-center">
+      <div className="search-bar mb-4 d-flex align-items-center justify-content-center">
         <FontAwesomeIcon icon={faSearch} className="search-icon me-2" />
         <input
           type="text"
@@ -46,10 +46,10 @@ function Home() {
           onChange={handleSearch}
         />
       </div>
-      <div className="row">
+      <div className="row g-4 movie-list">
         {filteredMovies.length > 0 ? (
           filteredMovies.map((movie) => (
-            <div key={movie.id} className="col-md-4 mb-4">
+            <div key={movie.id} className="col-6 col-md-3 col-lg-2">
               <div className="card movie-card" onClick={() => navigate(`/movie/${movie.id}`)}>
                 <div className="image-container">
                   <img
@@ -65,7 +65,7 @@ function Home() {
             </div>
           ))
         ) : (
-          <div className="text-center mt-4">
+          <div className="loading-container">
             <div className="hourglass"></div>
             <p>No se encontraron películas.</p>
           </div>
@@ -78,8 +78,10 @@ function Home() {
 function MovieDetails() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
+  const [cast, setCast] = useState([]);
   const navigate = useNavigate();
   const API_URL = `https://api.themoviedb.org/3/movie/${id}?api_key=c144cee3268c94c83ad046b6533644c8`;
+  const CAST_URL = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=c144cee3268c94c83ad046b6533644c8`;
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -91,37 +93,43 @@ function MovieDetails() {
         console.error("Error al obtener los detalles de la película:", error);
       }
     };
+    const fetchCast = async () => {
+      try {
+        const response = await fetch(CAST_URL);
+        const data = await response.json();
+        setCast(data.cast.slice(0, 5));
+      } catch (error) {
+        console.error("Error al obtener los actores:", error);
+      }
+    };
     fetchMovie();
+    fetchCast();
   }, [id]);
 
   if (!movie) return <p>Cargando detalles...</p>;
 
   return (
     <div className="container movie-details">
-      <button className="btn btn-secondary mb-4" onClick={() => navigate("/")}>
+      <button className="btn btn-secondary mb-4" onClick={() => navigate("/")}> 
         <FontAwesomeIcon icon={faArrowLeft} /> Regresar
       </button>
-      <h1 className="text-center my-4">{movie.title}</h1>
-      <div className="row">
-        <div className="col-md-6">
-          <img
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            className="img-fluid"
-            alt={movie.title}
-          />
+      <div className="row align-items-center">
+        <div className="col-md-4">
+          <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} className="img-fluid" alt={movie.title} />
         </div>
-        <div className="col-md-6">
+        <div className="col-md-8">
+          <h1>{movie.title}</h1>
           <p>{movie.overview}</p>
-          <p>
-            <strong>Fecha de estreno:</strong> {movie.release_date}
-          </p>
-          <p>
-            <strong>Puntuación:</strong> ⭐ {movie.vote_average}
-          </p>
-          <div className="mt-4">
-            <button className="btn btn-primary me-2">VER AHORA</button>
-            <button className="btn btn-secondary">TRÁILER</button>
-          </div>
+          <p><strong>Fecha de estreno:</strong> {movie.release_date}</p>
+          <p><strong>Puntuación:</strong> ⭐ {movie.vote_average}</p>
+          <h4>Reparto Principal:</h4>
+          <ul>
+            {cast.map((actor) => (
+              <li key={actor.id}>{actor.name} como {actor.character}</li>
+            ))}
+          </ul>
+          <button className="btn btn-primary me-2">VER AHORA</button>
+          <button className="btn btn-secondary">TRÁILER</button>
         </div>
       </div>
     </div>
