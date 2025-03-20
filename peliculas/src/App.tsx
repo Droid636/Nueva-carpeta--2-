@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; 
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -8,7 +8,12 @@ import "./App.css";
 function Home() {
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const API_URL = "https://api.themoviedb.org/3/movie/popular?api_key=c144cee3268c94c83ad046b6533644c8";
+  const [genres, setGenres] = useState({});
+  const [actors, setActors] = useState({});
+  const API_KEY = "c144cee3268c94c83ad046b6533644c8";
+  const API_URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`;
+  const GENRES_URL = `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=es`;
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,20 +22,49 @@ function Home() {
         const response = await fetch(API_URL);
         const data = await response.json();
         setMovies(data.results);
+
+        // Obtener actores para cada película
+        const actorsData = {};
+        for (const movie of data.results) {
+          const CAST_URL = `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${API_KEY}`;
+          const castResponse = await fetch(CAST_URL);
+          const castData = await castResponse.json();
+          actorsData[movie.id] = castData.cast.map((actor) => actor.name.toLowerCase());
+        }
+        setActors(actorsData);
       } catch (error) {
         console.error("Error al obtener las películas:", error);
       }
     };
+
+    const fetchGenres = async () => {
+      try {
+        const response = await fetch(GENRES_URL);
+        const data = await response.json();
+        const genreMap = {};
+        data.genres.forEach((genre) => {
+          genreMap[genre.id] = genre.name.toLowerCase();
+        });
+        setGenres(genreMap);
+      } catch (error) {
+        console.error("Error al obtener los géneros:", error);
+      }
+    };
+
     fetchMovies();
+    fetchGenres();
   }, []);
 
   const handleSearch = (event) => {
-    const value = event.target.value;
-    setSearchTerm(value.trim() !== "" ? value : "");
+    const value = event.target.value.trimStart();
+    setSearchTerm(value.toLowerCase());
   };
 
-  const filteredMovies = movies.filter((movie) =>
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMovies = movies.filter(
+    (movie) =>
+      movie.title.toLowerCase().includes(searchTerm) ||
+      movie.genre_ids.some((id) => genres[id]?.includes(searchTerm)) ||
+      (actors[movie.id] && actors[movie.id].some((actor) => actor.includes(searchTerm)))
   );
 
   return (
@@ -41,7 +75,7 @@ function Home() {
         <input
           type="text"
           className="form-control"
-          placeholder="Título, género, equipo o liga"
+          placeholder="Buscar por título, género o actor"
           value={searchTerm}
           onChange={handleSearch}
         />
@@ -80,7 +114,7 @@ function MovieDetails() {
   const [movie, setMovie] = useState(null);
   const [cast, setCast] = useState([]);
   const navigate = useNavigate();
-  const API_URL = `https://api.themoviedb.org/3/movie/${id}?api_key=c144cee3268c94c83ad046b6533644c8`;
+  const API_URL = `https://api.themoviedb.org/3/movie/${id}?api_key=c144cee3268c94c83ad046b6533644c8&language=es`;
   const CAST_URL = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=c144cee3268c94c83ad046b6533644c8`;
 
   useEffect(() => {
@@ -93,6 +127,7 @@ function MovieDetails() {
         console.error("Error al obtener los detalles de la película:", error);
       }
     };
+
     const fetchCast = async () => {
       try {
         const response = await fetch(CAST_URL);
@@ -102,6 +137,7 @@ function MovieDetails() {
         console.error("Error al obtener los actores:", error);
       }
     };
+
     fetchMovie();
     fetchCast();
   }, [id]);
@@ -110,9 +146,7 @@ function MovieDetails() {
 
   return (
     <div className="container movie-details">
-      <button className="btn btn-secondary mb-4" onClick={() => navigate("/")}> 
-        <FontAwesomeIcon icon={faArrowLeft} /> Regresar
-      </button>
+      <button className="btn btn-secondary mb-4" onClick={() => navigate("/")}> <FontAwesomeIcon icon={faArrowLeft} /> Regresar </button>
       <div className="row align-items-center">
         <div className="col-md-4">
           <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} className="img-fluid" alt={movie.title} />
@@ -128,8 +162,6 @@ function MovieDetails() {
               <li key={actor.id}>{actor.name} como {actor.character}</li>
             ))}
           </ul>
-          <button className="btn btn-primary me-2">VER AHORA</button>
-          <button className="btn btn-secondary">TRÁILER</button>
         </div>
       </div>
     </div>
