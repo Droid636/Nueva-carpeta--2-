@@ -187,7 +187,7 @@ function Home() {
 
   return (
     <div className="container-fluid">
-      <div className="search-container mb-4">
+      <div className="search-container mb-3 mb-md-4">
         <div className="search-bar">
           <FontAwesomeIcon 
             icon={isLoading ? faSpinner : faSearch} 
@@ -227,10 +227,10 @@ function Home() {
           <p>Cargando películas...</p>
         </div>
       ) : (
-        <div className="row g-4 movie-list">
+        <div className="movie-grid">
           {filteredMovies.length > 0 ? (
             filteredMovies.map((movie) => (
-              <div key={movie.id} className="col-6 col-md-3 col-lg-2">
+              <div key={movie.id} className="movie-card-container">
                 <div className="card movie-card" onClick={() => navigate(`/movie/${movie.id}`)}>
                   <div className="image-container">
                     <img
@@ -369,15 +369,27 @@ function MovieDetails() {
         <h1 className="movie-title-formatted">
           {formatTitle(movie.title)}
         </h1>
-        <p>{movie.overview}</p>
-        <p><strong>Fecha de estreno:</strong> {movie.release_date}</p>
-        <p><strong>Puntuación:</strong> ⭐ {movie.vote_average}</p>
-        <h4>Reparto Principal:</h4>
-        <ul>
-          {cast.map((actor) => (
-            <li key={actor.id}>{actor.name} como {actor.character}</li>
-          ))}
-        </ul>
+        
+        <div className="movie-meta">
+          <span className="release-date">{movie.release_date}</span>
+          <span className="rating">⭐ {movie.vote_average}</span>
+        </div>
+        
+        <div className="movie-description">
+          <p>{movie.overview}</p>
+        </div>
+        
+        <div className="movie-cast">
+          <h4>Reparto Principal:</h4>
+          <div className="cast-grid">
+            {cast.map((actor) => (
+              <div key={actor.id} className="cast-member">
+                <div className="actor-name">{actor.name}</div>
+                <div className="actor-character">como {actor.character}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
