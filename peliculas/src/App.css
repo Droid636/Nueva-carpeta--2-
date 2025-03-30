@@ -136,16 +136,81 @@ body {
 /* Grid de películas responsivo */
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 15px;
   padding: 15px;
   width: 100%;
   justify-items: center;
 }
 
+/* Estilo para cuando hay pocos resultados */
+.movie-grid.few-results {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Media queries para ajustar el grid */
+@media (max-width: 480px) { /* Móviles */
+  .movie-grid {
+    grid-template-columns: 1fr;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .movie-grid.few-results {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) { /* Tablets */
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .movie-grid.few-results {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 500px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) { /* Tablets grandes */
+  .movie-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .movie-grid.few-results {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1440px) { /* Computadoras */
+  .movie-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1441px) { /* Pantallas grandes */
+  .movie-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
 .movie-card-container {
   width: 100%;
   max-width: 250px;
+  min-width: 120px;
+}
+
+@media (max-width: 480px) {
+  .movie-card-container {
+    max-width: 100%;
+  }
+  
+  .movie-card {
+    padding-bottom: 140%;
+  }
 }
 
 .movie-card {
@@ -156,7 +221,7 @@ body {
   cursor: pointer;
   width: 100%;
   height: 0;
-  padding-bottom: 150%; /* Mantener relación de aspecto 2:3 */
+  padding-bottom: 150%;
   position: relative;
   border-radius: 10px;
 }
@@ -217,50 +282,37 @@ body {
   white-space: nowrap;
 }
 
-/* Media queries para ajustar el grid */
-@media (max-width: 360px) {
-  .movie-grid {
-    grid-template-columns: repeat(1, 1fr); /* 1 card en pantallas muy pequeñas */
+/* Banner de recomendaciones */
+.recommendation-banner {
+  grid-column: 1 / -1;
+  background: rgba(75, 108, 183, 0.3);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 10px 0;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-banner h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .recommendation-banner {
+    padding: 10px;
+  }
+  
+  .recommendation-banner h3 {
+    font-size: 1em;
   }
 }
 
-@media (min-width: 361px) and (max-width: 479px) {
-  .movie-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 cards */
-  }
-}
-
-@media (min-width: 480px) and (max-width: 639px) {
-  .movie-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 cards */
-  }
-}
-
-@media (min-width: 640px) and (max-width: 767px) {
-  .movie-grid {
-    grid-template-columns: repeat(4, 1fr); /* 4 cards */
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .movie-grid {
-    grid-template-columns: repeat(5, 1fr); /* 5 cards */
-  }
-}
-
-@media (min-width: 1024px) and (max-width: 1279px) {
-  .movie-grid {
-    grid-template-columns: repeat(6, 1fr); /* 6 cards */
-  }
-}
-
-@media (min-width: 1280px) {
-  .movie-grid {
-    grid-template-columns: repeat(7, 1fr); /* 7 cards */
-  }
-}
-
-/* Resto de estilos (loading, detalles de película, etc.) */
+/* Resto de estilos */
 .loading-container {
   position: fixed;
   top: 0;

@@ -227,7 +227,7 @@ function Home() {
           <p>Cargando películas...</p>
         </div>
       ) : (
-        <div className="movie-grid">
+        <div className={`movie-grid ${filteredMovies.length <= 4 ? 'few-results' : ''}`}>
           {filteredMovies.length > 0 ? (
             filteredMovies.map((movie) => (
               <div key={movie.id} className="movie-card-container">
